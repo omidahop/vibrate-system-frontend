@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html dir="rtl" lang="fa">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="ثبت‌نام در سیستم ویبره">
+    <meta name="robots" content="noindex">
+    <title>ثبت‌نام - سیستم ویبره</title>
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/x-icon" href="/favicon.ico">
+    
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Styles -->
+    <link rel="stylesheet" href="../styles/globals.css">
+    <link rel="stylesheet" href="../styles/components.css">
+    <link rel="stylesheet" href="../styles/themes.css">
+    
+    <style>
+        .auth-container {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, var(--success-color) 0%, var(--primary-color) 100%);
+            padding: var(--spacing-md);
+        }
+
+        .auth-card {
+            background-color: var(--bg-primary);
+            border-radius: var(--radius-xl);
+            box-shadow: var(--shadow-xl);
+            padding: var(--spacing-2xl);
+            width: 100%;
+            max-width: 450px;
+            max-height: 90vh;
+            overflow-y: auto;
+            animation: slideInUp 0.5s ease-out;
+        }
+
+        .auth-header {
+            text-align: center;
+            margin-bottom: var(--spacing-xl);
+        }
+
+        .auth-logo {
+            font-size: 3rem;
+            color: var(--success-color);
+            margin-bottom: var(--spacing-md);
+        }
+
+        .invite-section {
+            margin-bottom: var(--spacing-xl);
+            padding: var(--spacing-lg);
+            border: 2px solid var(--border-light);
+            border-radius: var(--radius-lg);
+            text-align: center;
+        }
+
+        .invite-status {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: var(--spacing-sm);
+            font-size: var(--font-size-sm);
+        }
+
+        .invite-status i {
+            font-size: var(--font-size-base);
+        }
+
+        .password-strength {
+            margin-top: var(--spacing-xs);
+            font-size: var(--font-size-xs);
+            font-weight: 500;
+        }
+
+        .strength-very-weak { color: #dc2626; }
+        .strength-weak { color: #ea580c; }
+        .strength-fair { color: #ca8a04; }
+        .strength-good { color: #16a34a; }
+        .strength-strong { color: #15803d; }
+        .strength-very-strong { color: #14532d; }
+
+        .password-input-container {
+            position: relative;
+        }
+
+        .password-toggle {
+            position: absolute;
+            left: var(--spacing-sm);
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            cursor: pointer;
+            padding: var(--spacing-xs);
+        }
+
+        .password-input-container .form-control {
+            padding-left: 3rem;
+        }
+
+        .back-to-app {
+            position: absolute;
+            top: var(--spacing-md);
+            right: var(--spacing-md);
+        }
+
+        @media (max-width: 480px) {
+            .auth-card {
+                padding: var(--spacing-lg);
+                margin: var(--spacing-sm);
+                max-height: calc(100vh - 2rem);
+            }
+            
+            .back-to-app {
+                position: static;
+                margin-bottom: var(--spacing-lg);
+                text-align: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Back to App Button -->
+    <div class="back-to-app">
+        <a href="/index.html" class="btn btn-secondary">
+            <i class="fas fa-arrow-right"></i>
+            بازگشت به برنامه
+        </a>
+    </div>
+
+    <div class="auth-container">
+        <div class="auth-card">
+            <!-- Register Form Container -->
+            <div id="register-form-container"></div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script type="module">
+        import RegisterForm from '../components/Auth/RegisterForm.js';
+        import { urlUtils } from '../utils/helpers.js';
+
+        // Apply initial theme
+        function applyInitialTheme() {
+            const savedTheme = localStorage.getItem('vibrate_theme');
+            const systemTheme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+            const theme = savedTheme || systemTheme;
+            
+            document.documentElement.setAttribute('data-theme', theme);
+        }
+
+        applyInitialTheme();
+
+        // Initialize register form
+        document.addEventListener('DOMContentLoaded', () => {
+            const container = document.getElementById('register-form-container');
+            const inviteToken = urlUtils.getQueryParam('token');
+            
+            const registerForm = new RegisterForm({
+                inviteToken: inviteToken,
+                onRegister: async (formData) => {
+                    try {
+                        const { default: authService } = await import('../services/authService.js');
+                        const result = await authService.register({
+                            ...formData,
+                            inviteToken: inviteToken
+                        });
+                        
+                        if (result.success) {
+                            // Show success message and redirect to login
+                            setTimeout(() => {
+                                window.location.href = '/login.html';
+                            }, 2000);
+                        }
+                    } catch (error) {
+                        throw error;
+                    }
+                },
+                onSwitchToLogin: () => {
+                    window.location.href = '/login.html';
+                },
+                autoFocus: true
+            });
+
+            registerForm.mount(container);
+        });
+    </script>
+</body>
+</html>

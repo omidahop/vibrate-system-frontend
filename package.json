@@ -1,0 +1,38 @@
+{
+  "name": "vibrate-system-frontend",
+  "version": "1.0.0",
+  "description": "Vibrate System Frontend - Equipment Vibration Data Management",
+  "main": "src/pages/index.html",
+  "scripts": {
+    "dev": "npx live-server --host=localhost --port=3000 --entry-file=src/pages/index.html",
+    "build": "npm run build:css && npm run copy:assets",
+    "build:css": "postcss src/styles/globals.css -o public/styles.css",
+    "copy:assets": "cp -r src/pages/* public/ && cp -r public/icons public/build/",
+    "start": "npm run build && npx http-server public -p 3000",
+    "lint": "eslint src/**/*.js",
+    "format": "prettier --write src/**/*.{js,html,css}"
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "^2.38.0",
+    "chart.js": "^4.4.0",
+    "date-fns": "^2.30.0"
+  },
+  "devDependencies": {
+    "live-server": "^1.2.2",
+    "http-server": "^14.1.1",
+    "postcss": "^8.4.32",
+    "postcss-cli": "^11.0.0",
+    "autoprefixer": "^10.4.16",
+    "eslint": "^8.55.0",
+    "prettier": "^3.1.0"
+  },
+  "keywords": [
+    "vibration",
+    "monitoring",
+    "industrial",
+    "pwa",
+    "supabase"
+  ],
+  "author": "Vibrate System Team",
+  "license": "MIT"
+}

@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html dir="rtl" lang="fa">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="ورود به سیستم ثبت داده‌های ویبره">
+    <meta name="robots" content="noindex">
+    <title>ورود به سیستم - سیستم ویبره</title>
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/x-icon" href="/favicon.ico">
+    
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Styles -->
+    <link rel="stylesheet" href="../styles/globals.css">
+    <link rel="stylesheet" href="../styles/components.css">
+    <link rel="stylesheet" href="../styles/themes.css">
+    
+    <style>
+        .auth-container {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--info-color) 100%);
+            padding: var(--spacing-md);
+        }
+
+        .auth-card {
+            background-color: var(--bg-primary);
+            border-radius: var(--radius-xl);
+            box-shadow: var(--shadow-xl);
+            padding: var(--spacing-2xl);
+            width: 100%;
+            max-width: 400px;
+            animation: slideInUp 0.5s ease-out;
+        }
+
+        .auth-header {
+            text-align: center;
+            margin-bottom: var(--spacing-2xl);
+        }
+
+        .auth-logo {
+            font-size: 3rem;
+            color: var(--primary-color);
+            margin-bottom: var(--spacing-md);
+        }
+
+        .auth-title {
+            color: var(--text-primary);
+            margin-bottom: var(--spacing-sm);
+        }
+
+        .auth-subtitle {
+            color: var(--text-muted);
+            font-size: var(--font-size-sm);
+            margin: 0;
+        }
+
+        .form-group {
+            margin-bottom: var(--spacing-lg);
+        }
+
+        .form-label {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-xs);
+            font-weight: 500;
+            margin-bottom: var(--spacing-sm);
+        }
+
+        .password-input-container {
+            position: relative;
+        }
+
+        .password-toggle {
+            position: absolute;
+            left: var(--spacing-sm);
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            cursor: pointer;
+            padding: var(--spacing-xs);
+        }
+
+        .password-input-container .form-control {
+            padding-left: 3rem;
+        }
+
+        .forgot-password-link {
+            text-align: center;
+            margin-bottom: var(--spacing-lg);
+        }
+
+        .forgot-password-link a {
+            color: var(--primary-color);
+            font-size: var(--font-size-sm);
+            text-decoration: none;
+        }
+
+        .forgot-password-link a:hover {
+            text-decoration: underline;
+        }
+
+        .auth-divider {
+            text-align: center;
+            margin: var(--spacing-xl) 0;
+            position: relative;
+            color: var(--text-muted);
+        }
+
+        .auth-divider::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background-color: var(--border-light);
+        }
+
+        .auth-divider span {
+            background-color: var(--bg-primary);
+            padding: 0 var(--spacing-md);
+        }
+
+        .auth-switch {
+            text-align: center;
+        }
+
+        .auth-switch p {
+            margin: 0;
+            font-size: var(--font-size-sm);
+            color: var(--text-muted);
+        }
+
+        .auth-switch a {
+            color: var(--primary-color);
+            font-weight: 500;
+            text-decoration: none;
+        }
+
+        .auth-switch a:hover {
+            text-decoration: underline;
+        }
+
+        .checkbox-container {
+            margin-bottom: var(--spacing-md);
+        }
+
+        .offline-notice {
+            background-color: rgba(245, 158, 11, 0.1);
+            border: 1px solid var(--warning-color);
+            border-radius: var(--radius-md);
+            padding: var(--spacing-md);
+            text-align: center;
+            color: var(--warning-color);
+            font-size: var(--font-size-sm);
+            margin-top: var(--spacing-md);
+        }
+
+        .back-to-app {
+            position: absolute;
+            top: var(--spacing-md);
+            right: var(--spacing-md);
+        }
+
+        @media (max-width: 480px) {
+            .auth-card {
+                padding: var(--spacing-lg);
+                margin: var(--spacing-sm);
+            }
+            
+            .back-to-app {
+                position: static;
+                margin-bottom: var(--spacing-lg);
+                text-align: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Back to App Button -->
+    <div class="back-to-app">
+        <a href="/index.html" class="btn btn-secondary">
+            <i class="fas fa-arrow-right"></i>
+            بازگشت به برنامه
+        </a>
+    </div>
+
+    <div class="auth-container">
+        <div class="auth-card">
+            <!-- Login Form Container -->
+            <div id="login-form-container"></div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script type="module">
+        import LoginForm from '../components/Auth/LoginForm.js';
+        import { urlUtils } from '../utils/helpers.js';
+
+        // Apply initial theme
+        function applyInitialTheme() {
+            const savedTheme = localStorage.getItem('vibrate_theme');
+            const systemTheme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+            const theme = savedTheme || systemTheme;
+            
+            document.documentElement.setAttribute('data-theme', theme);
+        }
+
+        applyInitialTheme();
+
+        // Initialize login form
+        document.addEventListener('DOMContentLoaded', () => {
+            const container = document.getElementById('login-form-container');
+            
+            const loginForm = new LoginForm({
+                onLogin: async (formData) => {
+                    try {
+                        const { default: authService } = await import('../services/authService.js');
+                        const result = await authService.login(formData.email, formData.password);
+                        
+                        if (result.success) {
+                            // Handle remember me
+                            if (formData.rememberMe) {
+                                localStorage.setItem('rememberMe', 'true');
+                            }
+                            
+                            // Redirect
+                            const redirectTo = urlUtils.getQueryParam('redirect') || '/index.html';
+                            window.location.href = redirectTo;
+                        }
+                    } catch (error) {
+                        throw error;
+                    }
+                },
+                onSwitchToRegister: () => {
+                    window.location.href = '/register.html';
+                },
+                autoFocus: true
+            });
+
+            loginForm.mount(container);
+        });
+
+        // Network status monitoring
+        function updateNetworkStatus() {
+            const offlineNotices = document.querySelectorAll('#offline-notice');
+            offlineNotices.forEach(notice => {
+                if (navigator.onLine) {
+                    notice.style.display = 'none';
+                } else {
+                    notice.style.display = 'block';
+                }
+            });
+        }
+
+        window.addEventListener('online', updateNetworkStatus);
+        window.addEventListener('offline', updateNetworkStatus);
+        updateNetworkStatus();
+    </script>
+</body>
+</html>
