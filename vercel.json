@@ -6,18 +6,18 @@
       "use": "@vercel/static"
     }
   ],
-  "routes": [
+  "rewrites": [
     {
-      "src": "/service-worker.js",
-      "dest": "/public/service-worker.js"
+      "source": "/service-worker.js",
+      "destination": "/public/service-worker.js"
     },
     {
-      "src": "/manifest.json",
-      "dest": "/public/manifest.json"
+      "source": "/manifest.json",
+      "destination": "/public/manifest.json"
     },
     {
-      "src": "/(.*)",
-      "dest": "/public/index.html"
+      "source": "/(.*)",
+      "destination": "/public/index.html"
     }
   ],
   "headers": [
